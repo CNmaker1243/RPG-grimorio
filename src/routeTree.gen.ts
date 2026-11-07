@@ -10,33 +10,144 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedFichasRouteImport } from './routes/_authenticated/fichas'
+import { Route as AuthenticatedPainelRouteImport } from './routes/_authenticated/painel'
+import { Route as ConviteCodeRouteImport } from './routes/convite.$code'
+import { Route as AuthenticatedCampanhaIdRouteImport } from './routes/_authenticated/campanha.$id'
+import { Route as AuthenticatedCampanhaIdIndexRouteImport } from './routes/_authenticated/campanha.$id.index'
+import { Route as AuthenticatedCampanhaIdFichasRouteImport } from './routes/_authenticated/campanha.$id.fichas'
+import { Route as AuthenticatedCampanhaIdMestraRouteImport } from './routes/_authenticated/campanha.$id.mestra'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedFichasRoute = AuthenticatedFichasRouteImport.update({
+  id: '/fichas',
+  path: '/fichas',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedPainelRoute = AuthenticatedPainelRouteImport.update({
+  id: '/painel',
+  path: '/painel',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const ConviteCodeRoute = ConviteCodeRouteImport.update({
+  id: '/convite/$code',
+  path: '/convite/$code',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedCampanhaIdRoute = AuthenticatedCampanhaIdRouteImport.update({
+  id: '/campanha/$id',
+  path: '/campanha/$id',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedCampanhaIdIndexRoute =
+  AuthenticatedCampanhaIdIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedCampanhaIdRoute,
+  } as any)
+const AuthenticatedCampanhaIdFichasRoute =
+  AuthenticatedCampanhaIdFichasRouteImport.update({
+    id: '/fichas',
+    path: '/fichas',
+    getParentRoute: () => AuthenticatedCampanhaIdRoute,
+  } as any)
+const AuthenticatedCampanhaIdMestraRoute =
+  AuthenticatedCampanhaIdMestraRouteImport.update({
+    id: '/mestra',
+    path: '/mestra',
+    getParentRoute: () => AuthenticatedCampanhaIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/fichas': typeof AuthenticatedFichasRoute
+  '/painel': typeof AuthenticatedPainelRoute
+  '/convite/$code': typeof ConviteCodeRoute
+  '/campanha/$id': typeof AuthenticatedCampanhaIdRouteWithChildren
+  '/campanha/$id/fichas': typeof AuthenticatedCampanhaIdFichasRoute
+  '/campanha/$id/mestra': typeof AuthenticatedCampanhaIdMestraRoute
+  '/campanha/$id/': typeof AuthenticatedCampanhaIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/fichas': typeof AuthenticatedFichasRoute
+  '/painel': typeof AuthenticatedPainelRoute
+  '/convite/$code': typeof ConviteCodeRoute
+  '/campanha/$id/fichas': typeof AuthenticatedCampanhaIdFichasRoute
+  '/campanha/$id/mestra': typeof AuthenticatedCampanhaIdMestraRoute
+  '/campanha/$id': typeof AuthenticatedCampanhaIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/_authenticated/fichas': typeof AuthenticatedFichasRoute
+  '/_authenticated/painel': typeof AuthenticatedPainelRoute
+  '/convite/$code': typeof ConviteCodeRoute
+  '/_authenticated/campanha/$id': typeof AuthenticatedCampanhaIdRouteWithChildren
+  '/_authenticated/campanha/$id/fichas': typeof AuthenticatedCampanhaIdFichasRoute
+  '/_authenticated/campanha/$id/mestra': typeof AuthenticatedCampanhaIdMestraRoute
+  '/_authenticated/campanha/$id/': typeof AuthenticatedCampanhaIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/fichas'
+    | '/painel'
+    | '/convite/$code'
+    | '/campanha/$id'
+    | '/campanha/$id/fichas'
+    | '/campanha/$id/mestra'
+    | '/campanha/$id/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/auth'
+    | '/fichas'
+    | '/painel'
+    | '/convite/$code'
+    | '/campanha/$id/fichas'
+    | '/campanha/$id/mestra'
+    | '/campanha/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/_authenticated/fichas'
+    | '/_authenticated/painel'
+    | '/convite/$code'
+    | '/_authenticated/campanha/$id'
+    | '/_authenticated/campanha/$id/fichas'
+    | '/_authenticated/campanha/$id/mestra'
+    | '/_authenticated/campanha/$id/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
+  ConviteCodeRoute: typeof ConviteCodeRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +159,110 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/fichas': {
+      id: '/_authenticated/fichas'
+      path: '/fichas'
+      fullPath: '/fichas'
+      preLoaderRoute: typeof AuthenticatedFichasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/painel': {
+      id: '/_authenticated/painel'
+      path: '/painel'
+      fullPath: '/painel'
+      preLoaderRoute: typeof AuthenticatedPainelRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/convite/$code': {
+      id: '/convite/$code'
+      path: '/convite/$code'
+      fullPath: '/convite/$code'
+      preLoaderRoute: typeof ConviteCodeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/campanha/$id': {
+      id: '/_authenticated/campanha/$id'
+      path: '/campanha/$id'
+      fullPath: '/campanha/$id'
+      preLoaderRoute: typeof AuthenticatedCampanhaIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/campanha/$id/': {
+      id: '/_authenticated/campanha/$id/'
+      path: '/'
+      fullPath: '/campanha/$id/'
+      preLoaderRoute: typeof AuthenticatedCampanhaIdIndexRouteImport
+      parentRoute: typeof AuthenticatedCampanhaIdRoute
+    }
+    '/_authenticated/campanha/$id/fichas': {
+      id: '/_authenticated/campanha/$id/fichas'
+      path: '/fichas'
+      fullPath: '/campanha/$id/fichas'
+      preLoaderRoute: typeof AuthenticatedCampanhaIdFichasRouteImport
+      parentRoute: typeof AuthenticatedCampanhaIdRoute
+    }
+    '/_authenticated/campanha/$id/mestra': {
+      id: '/_authenticated/campanha/$id/mestra'
+      path: '/mestra'
+      fullPath: '/campanha/$id/mestra'
+      preLoaderRoute: typeof AuthenticatedCampanhaIdMestraRouteImport
+      parentRoute: typeof AuthenticatedCampanhaIdRoute
+    }
   }
 }
 
+interface AuthenticatedCampanhaIdRouteChildren {
+  AuthenticatedCampanhaIdFichasRoute: typeof AuthenticatedCampanhaIdFichasRoute
+  AuthenticatedCampanhaIdMestraRoute: typeof AuthenticatedCampanhaIdMestraRoute
+  AuthenticatedCampanhaIdIndexRoute: typeof AuthenticatedCampanhaIdIndexRoute
+}
+
+const AuthenticatedCampanhaIdRouteChildren: AuthenticatedCampanhaIdRouteChildren =
+  {
+    AuthenticatedCampanhaIdFichasRoute: AuthenticatedCampanhaIdFichasRoute,
+    AuthenticatedCampanhaIdMestraRoute: AuthenticatedCampanhaIdMestraRoute,
+    AuthenticatedCampanhaIdIndexRoute: AuthenticatedCampanhaIdIndexRoute,
+  }
+
+const AuthenticatedCampanhaIdRouteWithChildren =
+  AuthenticatedCampanhaIdRoute._addFileChildren(
+    AuthenticatedCampanhaIdRouteChildren,
+  )
+
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedFichasRoute: typeof AuthenticatedFichasRoute
+  AuthenticatedPainelRoute: typeof AuthenticatedPainelRoute
+  AuthenticatedCampanhaIdRoute: typeof AuthenticatedCampanhaIdRouteWithChildren
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedFichasRoute: AuthenticatedFichasRoute,
+  AuthenticatedPainelRoute: AuthenticatedPainelRoute,
+  AuthenticatedCampanhaIdRoute: AuthenticatedCampanhaIdRouteWithChildren,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
+  ConviteCodeRoute: ConviteCodeRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
