@@ -28,3 +28,8 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+## Campaign dice architecture
+- Generate campaign dice through the database RPC, with cryptographic randomness and membership/character checks; never generate or accept results from the browser.
+- Keep dice history append-only for application users and snapshot roller/character names with typed groups so later edits cannot change recorded rolls.
+- Keep selection validation in `src/lib/dice.ts` and render recorded groups through `DiceResults` so the latest result and history agree.

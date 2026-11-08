@@ -126,34 +126,49 @@ export type Database = {
       dice_rolls: {
         Row: {
           campaign_id: string
+          character_id: string | null
+          character_name: string
           created_at: string
+          dice_groups: Json
           expression: string
           id: string
           label: string
           modifier: number
           results: number[]
+          roll_mode: string
+          roller_name: string
           total: number
           user_id: string
         }
         Insert: {
           campaign_id: string
+          character_id?: string | null
+          character_name?: string
           created_at?: string
+          dice_groups?: Json
           expression: string
           id?: string
           label?: string
           modifier?: number
           results: number[]
+          roll_mode?: string
+          roller_name?: string
           total: number
           user_id: string
         }
         Update: {
           campaign_id?: string
+          character_id?: string | null
+          character_name?: string
           created_at?: string
+          dice_groups?: Json
           expression?: string
           id?: string
           label?: string
           modifier?: number
           results?: number[]
+          roll_mode?: string
+          roller_name?: string
           total?: number
           user_id?: string
         }
@@ -210,12 +225,49 @@ export type Database = {
         }
         Returns: {
           campaign_id: string
+          character_id: string | null
+          character_name: string
           created_at: string
+          dice_groups: Json
           expression: string
           id: string
           label: string
           modifier: number
           results: number[]
+          roll_mode: string
+          roller_name: string
+          total: number
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "dice_rolls"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      roll_dice_combined: {
+        Args: {
+          _campaign: string
+          _character?: string
+          _dice: Json
+          _label?: string
+          _mode?: string
+          _modifier?: number
+        }
+        Returns: {
+          campaign_id: string
+          character_id: string | null
+          character_name: string
+          created_at: string
+          dice_groups: Json
+          expression: string
+          id: string
+          label: string
+          modifier: number
+          results: number[]
+          roll_mode: string
+          roller_name: string
           total: number
           user_id: string
         }
