@@ -32,7 +32,7 @@ function Fichas() {
     const { error } = await supabase
       .from("characters")
       .insert({ campaign_id: id, owner_id: camp.data!.userId, name: name.trim() });
-    if (error) return toast.error(errMsg(error));
+    if (error) { toast.error(errMsg(error)); return; }
     setName("");
     qc.invalidateQueries({ queryKey: ["characters", id] });
   }
@@ -75,14 +75,14 @@ function CharacterCard({ c, owner }: { c: Character; owner: string }) {
 
   async function save() {
     const { error } = await supabase.from("characters").update({ name: name.trim(), notes }).eq("id", c.id);
-    if (error) return toast.error(errMsg(error));
+    if (error) { toast.error(errMsg(error)); return; }
     toast.success("Ficha salva");
     qc.invalidateQueries({ queryKey: ["characters", c.campaign_id] });
   }
   async function remove() {
     if (!confirm(`Excluir a ficha "${c.name}"?`)) return;
     const { error } = await supabase.from("characters").delete().eq("id", c.id);
-    if (error) return toast.error(errMsg(error));
+    if (error) { toast.error(errMsg(error)); return; }
     qc.invalidateQueries({ queryKey: ["characters", c.campaign_id] });
   }
 

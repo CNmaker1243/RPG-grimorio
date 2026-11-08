@@ -48,7 +48,7 @@ function Sala() {
       _campaign: id, _count: count, _sides: sides, _modifier: mod, _label: label,
     });
     setBusy(false);
-    if (error) return toast.error(errMsg(error));
+    if (error) { toast.error(errMsg(error)); return; }
     qc.invalidateQueries({ queryKey: ["rolls", id] });
   }
 

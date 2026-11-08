@@ -42,7 +42,7 @@ function Painel() {
       .select("id")
       .single();
     setBusy(false);
-    if (error) return toast.error(errMsg(error));
+    if (error) { toast.error(errMsg(error)); return; }
     setName("");
     qc.invalidateQueries({ queryKey: ["my-campaigns"] });
     navigate({ to: "/campanha/$id", params: { id: c.id } });
@@ -53,7 +53,7 @@ function Painel() {
     setBusy(true);
     const { data: id, error } = await supabase.rpc("join_campaign", { _code: code });
     setBusy(false);
-    if (error) return toast.error(errMsg(error));
+    if (error) { toast.error(errMsg(error)); return; }
     setCode("");
     qc.invalidateQueries({ queryKey: ["my-campaigns"] });
     navigate({ to: "/campanha/$id", params: { id: id as string } });

@@ -30,7 +30,7 @@ function Invite() {
         return;
       }
       const { data: id, error } = await supabase.rpc("join_campaign", { _code: code });
-      if (error) return setError(errMsg(error));
+      if (error) { setError(errMsg(error)); return; }
       navigate({ to: "/campanha/$id", params: { id: id as string }, replace: true });
     })();
   }, [code, navigate]);

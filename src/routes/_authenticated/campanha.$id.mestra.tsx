@@ -39,31 +39,31 @@ function PainelMestra() {
   async function saveSettings(e: React.FormEvent) {
     e.preventDefault();
     const { error } = await supabase.from("campaigns").update({ name: name.trim(), max_characters_per_player: limit }).eq("id", id);
-    if (error) return toast.error(errMsg(error));
+    if (error) { toast.error(errMsg(error)); return; }
     toast.success("Configurações salvas");
     refresh();
   }
   async function regen() {
     const { error } = await supabase.rpc("regenerate_invite", { _campaign: id });
-    if (error) return toast.error(errMsg(error));
+    if (error) { toast.error(errMsg(error)); return; }
     toast.success("Novo código gerado; o anterior deixou de funcionar");
     refresh();
   }
   async function updateMember(mid: string, patch: { can_create_characters?: boolean; max_characters?: number | null }) {
     const { error } = await supabase.from("campaign_members").update(patch).eq("id", mid);
-    if (error) return toast.error(errMsg(error));
+    if (error) { toast.error(errMsg(error)); return; }
     refresh();
   }
   async function removeMember(mid: string, n: string) {
     if (!confirm(`Remover ${n} da campanha?`)) return;
     const { error } = await supabase.from("campaign_members").delete().eq("id", mid);
-    if (error) return toast.error(errMsg(error));
+    if (error) { toast.error(errMsg(error)); return; }
     refresh();
   }
   async function deleteCampaign() {
     if (!confirm("Excluir a campanha e todos os dados dela? Isso não pode ser desfeito.")) return;
     const { error } = await supabase.from("campaigns").delete().eq("id", id);
-    if (error) return toast.error(errMsg(error));
+    if (error) { toast.error(errMsg(error)); return; }
     qc.invalidateQueries({ queryKey: ["my-campaigns"] });
     navigate({ to: "/painel" });
   }
