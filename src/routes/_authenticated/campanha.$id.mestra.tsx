@@ -9,6 +9,10 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { supabase } from "@/integrations/supabase/client";
 import { campaignQuery, membersQuery, errMsg } from "@/lib/rpg";
+import { TemplateEditor } from "@/components/TemplateEditor";
+import { TemplatePermissions } from "@/components/TemplatePermissions";
+import { SuccessTestEditor } from "@/components/SuccessTests";
+import { useSheetUpdates } from "@/hooks/use-sheet-updates";
 
 export const Route = createFileRoute("/_authenticated/campanha/$id/mestra")({
   head: () => ({ meta: [
@@ -23,6 +27,7 @@ export const Route = createFileRoute("/_authenticated/campanha/$id/mestra")({
 
 function PainelMestra() {
   const { id } = Route.useParams();
+  useSheetUpdates(id);
   const qc = useQueryClient();
   const navigate = useNavigate();
   const camp = useQuery(campaignQuery(id));
@@ -104,7 +109,7 @@ function PainelMestra() {
         <h2 className="mb-3 text-2xl font-semibold">Jogadores</h2>
         <ul className="divide-y divide-border">
           {members.data?.filter((m) => m.role === "jogador").map((m) => (
-            <li key={m.id} className="flex flex-col gap-3 py-3 sm:flex-row sm:items-center">
+            <li key={m.id} className="flex flex-wrap gap-3 py-3 sm:items-center">
               <span className="font-medium sm:w-48">{m.name}</span>
               <label className="flex items-center gap-2 text-sm">
                 <Switch checked={m.can_create_characters} onCheckedChange={(v) => updateMember(m.id, { can_create_characters: v })} />
@@ -124,6 +129,7 @@ function PainelMestra() {
               <Button variant="ghost" size="sm" className="sm:ml-auto" onClick={() => removeMember(m.id, m.name)}>
                 <UserMinus className="h-4 w-4" /> Remover
               </Button>
+              <TemplatePermissions id={id} memberId={m.id} />
             </li>
           ))}
           {!members.data?.some((m) => m.role === "jogador") && (
@@ -131,6 +137,9 @@ function PainelMestra() {
           )}
         </ul>
       </section>
+
+      <TemplateEditor id={id} />
+      <SuccessTestEditor id={id} />
 
       {camp.data.userId === c.owner_id && (
         <section className="rounded-lg border border-destructive/50 bg-card p-5">

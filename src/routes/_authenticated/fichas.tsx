@@ -22,10 +22,11 @@ function MinhasFichas() {
     queryKey: ["my-characters"],
     queryFn: async () => {
       const uid = await currentUserId();
+      if (!uid) throw new Error("Entre para acessar suas fichas.");
       const { data, error } = await supabase
         .from("characters")
         .select("*, campaign:campaigns(name)")
-        .eq("owner_id", uid!)
+        .eq("owner_id", uid)
         .order("updated_at", { ascending: false });
       if (error) throw error;
       return data ?? [];

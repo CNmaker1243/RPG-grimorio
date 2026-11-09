@@ -22,6 +22,13 @@
       "when": 1794184325086,
       "tag": "0002_custom_sheets_skills_success_tests",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1794249173363,
+      "tag": "0003_fix_sheet_skill_attribute_validation",
+      "breakpoints": true
     }
   ]
 }

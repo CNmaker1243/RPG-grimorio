@@ -34,3 +34,9 @@ use the editor.
 - Generate campaign dice through the database RPC, with cryptographic randomness and membership/character checks; never generate or accept results from the browser.
 - Keep dice history append-only for application users and snapshot roller/character names with typed groups so later edits cannot change recorded rolls.
 - Keep selection validation in `src/lib/dice.ts` and render recorded groups through `DiceResults` so the latest result and history agree.
+
+## Custom sheets architecture
+- Store campaign templates, linked skills and per-member type quotas separately; validate sheet data and limits in database triggers so browser requests cannot bypass master settings.
+- Keep template field IDs stable across renames and store character values by those IDs; template deletion is restricted while sheets use it.
+- Define reusable success tests through master-only rows; the dice RPC derives the pool and difficulty from stored rows and snapshots the outcome in existing dice history.
+- Use `src/lib/sheets.ts` for typed queries and parsing, focused sheet editors for presentation, and `useSheetUpdates` for shared cache refresh after campaign changes.

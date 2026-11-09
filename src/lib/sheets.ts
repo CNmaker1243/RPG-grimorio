@@ -9,13 +9,13 @@ export type SheetField = { id: string; name: string; kind: "attribute" | "number
 export type SheetData = { values: Record<string, string | number>; skills: Record<string, number> };
 export function readFields(value: Json): SheetField[] {
   if (!Array.isArray(value)) return [];
-  return value.flatMap(f => f && typeof f === "object" && !Array.isArray(f) && typeof f.id === "string" && typeof f.name === "string" && (f.kind === "attribute" || f.kind === "number" || f.kind === "text" || f.kind === "textarea") ? [{id:f.id,name:f.name,kind:f.kind}] : []);
+  return value.flatMap(f => f && typeof f === "object" && !Array.isArray(f) && typeof f['id'] === "string" && typeof f['name'] === "string" && (f['kind'] === "attribute" || f['kind'] === "number" || f['kind'] === "text" || f['kind'] === "textarea") ? [{id:f['id'],name:f['name'],kind:f['kind']}] : []);
 }
 export function readSheet(value: Json): SheetData {
   const data: SheetData = {values:{},skills:{}};
   if (!value || typeof value !== "object" || Array.isArray(value)) return data;
-  for (const [key,v] of Object.entries(value.values && typeof value.values === "object" && !Array.isArray(value.values) ? value.values : {})) if (typeof v === "string" || typeof v === "number") data.values[key]=v;
-  for (const [key,v] of Object.entries(value.skills && typeof value.skills === "object" && !Array.isArray(value.skills) ? value.skills : {})) if (typeof v === "number") data.skills[key]=v;
+  for (const [key,v] of Object.entries(value['values'] && typeof value['values'] === "object" && !Array.isArray(value['values']) ? value['values'] : {})) if (typeof v === "string" || typeof v === "number") data.values[key]=v;
+  for (const [key,v] of Object.entries(value['skills'] && typeof value['skills'] === "object" && !Array.isArray(value['skills']) ? value['skills'] : {})) if (typeof v === "number") data.skills[key]=v;
   return data;
 }
 export function successCount(results: number[]) { return results.filter(n => n >= 6).length; }
