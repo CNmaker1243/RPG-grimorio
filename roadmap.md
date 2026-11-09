@@ -5,7 +5,7 @@
 - [x] Test rules and authenticated desktop/mobile campaign flow.
 
 # Custom sheets and success tests
-- [ ] Add template, skill, quota and success-test storage with server-enforced rules.
-- [ ] Add master editors and customizable character sheets.
-- [ ] Integrate d10 tests with public immutable dice history.
-- [ ] Verify rules and authenticated desktop/mobile flows.
+- [x] Add template, skill, quota and success-test storage with server-enforced rules.
+- [x] Add master editors and customizable character sheets.
+- [x] Integrate d10 tests with public immutable dice history.
+- [x] Verify rules and authenticated desktop/mobile flows.
