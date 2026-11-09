@@ -15,6 +15,13 @@
       "when": 1794099255319,
       "tag": "0001_secure_combined_campaign_dice",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1794184325086,
+      "tag": "0002_custom_sheets_skills_success_tests",
+      "breakpoints": true
     }
   ]
 }

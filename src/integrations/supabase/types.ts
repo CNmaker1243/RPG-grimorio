@@ -91,6 +91,7 @@ export type Database = {
           name: string
           notes: string
           owner_id: string
+          template_id: string | null
           updated_at: string
         }
         Insert: {
@@ -101,6 +102,7 @@ export type Database = {
           name: string
           notes?: string
           owner_id?: string
+          template_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -111,6 +113,7 @@ export type Database = {
           name?: string
           notes?: string
           owner_id?: string
+          template_id?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -119,6 +122,13 @@ export type Database = {
             columns: ["campaign_id"]
             isOneToOne: false
             referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "characters_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "sheet_templates"
             referencedColumns: ["id"]
           },
         ]
@@ -137,6 +147,7 @@ export type Database = {
           results: number[]
           roll_mode: string
           roller_name: string
+          success_data: Json | null
           total: number
           user_id: string
         }
@@ -153,6 +164,7 @@ export type Database = {
           results: number[]
           roll_mode?: string
           roller_name?: string
+          success_data?: Json | null
           total: number
           user_id: string
         }
@@ -169,6 +181,7 @@ export type Database = {
           results?: number[]
           roll_mode?: string
           roller_name?: string
+          success_data?: Json | null
           total?: number
           user_id?: string
         }
@@ -178,6 +191,42 @@ export type Database = {
             columns: ["campaign_id"]
             isOneToOne: false
             referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      member_template_limits: {
+        Row: {
+          id: string
+          max_characters: number
+          member_id: string
+          template_id: string
+        }
+        Insert: {
+          id?: string
+          max_characters?: number
+          member_id: string
+          template_id: string
+        }
+        Update: {
+          id?: string
+          max_characters?: number
+          member_id?: string
+          template_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "member_template_limits_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "campaign_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "member_template_limits_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "sheet_templates"
             referencedColumns: ["id"]
           },
         ]
@@ -199,6 +248,112 @@ export type Database = {
           id?: string
         }
         Relationships: []
+      }
+      sheet_skills: {
+        Row: {
+          attribute_id: string
+          description: string
+          id: string
+          max_level: number
+          name: string
+          template_id: string
+        }
+        Insert: {
+          attribute_id: string
+          description?: string
+          id?: string
+          max_level?: number
+          name: string
+          template_id: string
+        }
+        Update: {
+          attribute_id?: string
+          description?: string
+          id?: string
+          max_level?: number
+          name?: string
+          template_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sheet_skills_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "sheet_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sheet_templates: {
+        Row: {
+          campaign_id: string
+          created_at: string
+          fields: Json
+          id: string
+          name: string
+        }
+        Insert: {
+          campaign_id: string
+          created_at?: string
+          fields?: Json
+          id?: string
+          name: string
+        }
+        Update: {
+          campaign_id?: string
+          created_at?: string
+          fields?: Json
+          id?: string
+          name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sheet_templates_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      success_tests: {
+        Row: {
+          campaign_id: string
+          difficulty: number
+          id: string
+          name: string
+          skill_id: string
+        }
+        Insert: {
+          campaign_id: string
+          difficulty?: number
+          id?: string
+          name: string
+          skill_id: string
+        }
+        Update: {
+          campaign_id?: string
+          difficulty?: number
+          id?: string
+          name?: string
+          skill_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "success_tests_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "success_tests_skill_id_fkey"
+            columns: ["skill_id"]
+            isOneToOne: false
+            referencedRelation: "sheet_skills"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
@@ -236,6 +391,7 @@ export type Database = {
           results: number[]
           roll_mode: string
           roller_name: string
+          success_data: Json | null
           total: number
           user_id: string
         }
@@ -268,6 +424,33 @@ export type Database = {
           results: number[]
           roll_mode: string
           roller_name: string
+          success_data: Json | null
+          total: number
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "dice_rolls"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      roll_success_test: {
+        Args: { _character: string; _test: string }
+        Returns: {
+          campaign_id: string
+          character_id: string | null
+          character_name: string
+          created_at: string
+          dice_groups: Json
+          expression: string
+          id: string
+          label: string
+          modifier: number
+          results: number[]
+          roll_mode: string
+          roller_name: string
+          success_data: Json | null
           total: number
           user_id: string
         }
@@ -279,6 +462,10 @@ export type Database = {
         }
       }
       shares_campaign: { Args: { _a: string; _b: string }; Returns: boolean }
+      validate_sheet_values: {
+        Args: { _data: Json; _template: string }
+        Returns: undefined
+      }
     }
     Enums: {
       campaign_role: "mestra" | "jogador"
