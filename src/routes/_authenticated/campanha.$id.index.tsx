@@ -28,7 +28,6 @@ function Sala() {
   const { id } = Route.useParams();
   const qc = useQueryClient();
   const members = useQuery(membersQuery(id));
-  const rolls = useQuery(rollsQuery(id));
   const camp = useQuery(campaignQuery(id));
   const chars = useQuery(charactersQuery(id));
   const [mode, setMode] = useState<RollMode>("individual");
@@ -43,7 +42,7 @@ function Sala() {
   const [live, setLive] = useState(false);
   const [historyLimit, setHistoryLimit] = useState(50);
   const history = useQuery(rollsQuery(id, historyLimit));
-  const dice = mode === "individual" ? [{sides, count}] : DICE_SIDES.flatMap(d => quantities[d] > 0 ? [{sides:d, count:quantities[d]}] : []);
+  const dice = mode === "individual" ? [{sides, count}] : DICE_SIDES.flatMap(d => (quantities[d] ?? 0) > 0 ? [{sides:d, count:quantities[d] ?? 0}] : []);
   const validation = validateDice(dice, mode);
   const expression = diceExpression(dice, mod);
   const characterOptions = chars.data?.filter(c => c.owner_id === camp.data?.userId || camp.data?.me?.role === "mestra") ?? [];
@@ -93,7 +92,7 @@ function Sala() {
               </div>
               <div className="max-w-48 space-y-2"><Label htmlFor="qt">Quantidade</Label><Input id="qt" required type="number" min={1} max={100} step={1} value={Number.isNaN(count) ? "" : count} onChange={e => setCount(e.target.valueAsNumber)} /></div>
             </> : <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-              {DICE_SIDES.map(d => <div key={d} className={`space-y-3 rounded-md border p-3 ${quantities[d] > 0 ? "border-primary bg-secondary" : "border-border"}`}>
+              {DICE_SIDES.map(d => <div key={d} className={`space-y-3 rounded-md border p-3 ${(quantities[d] ?? 0) > 0 ? "border-primary bg-secondary" : "border-border"}`}>
                 <Label htmlFor={`dice-${d}`} className="block font-mono text-xl">d{d}</Label>
                 <div className="flex items-center gap-1">
                   <Button type="button" size="icon" variant="ghost" className="h-8 w-8 shrink-0" title={`Diminuir d${d}`} aria-label={`Diminuir d${d}`} disabled={!quantities[d]} onClick={() => setQuantities(q => ({...q,[d]:Math.max(0,(q[d] || 0)-1)}))}><Minus className="h-4 w-4" /></Button>

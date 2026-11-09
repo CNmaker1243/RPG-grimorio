@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
-import { myCampaignsQuery, errMsg, currentUserId } from "@/lib/rpg";
+import { myCampaignsQuery, errMsg, createCampaign } from "@/lib/rpg";
 
 export const Route = createFileRoute("/_authenticated/painel")({
   head: () => ({
@@ -34,18 +34,15 @@ function Painel() {
 
   async function create(e: React.FormEvent) {
     e.preventDefault();
+    if (busy || !name.trim()) return;
     setBusy(true);
-    const uid = await currentUserId();
-    const { data: c, error } = await supabase
-      .from("campaigns")
-      .insert({ name: name.trim(), owner_id: uid! })
-      .select("id")
-      .single();
-    setBusy(false);
-    if (error) { toast.error(errMsg(error)); return; }
-    setName("");
-    qc.invalidateQueries({ queryKey: ["my-campaigns"] });
-    navigate({ to: "/campanha/$id", params: { id: c.id } });
+    try {
+      const id = await createCampaign(name);
+      setName("");
+      await qc.invalidateQueries({ queryKey: ["my-campaigns"] });
+      await navigate({ to: "/campanha/$id", params: { id } });
+    } catch (error) { toast.error(errMsg(error)); }
+    finally { setBusy(false); }
   }
 
   async function join(e: React.FormEvent) {

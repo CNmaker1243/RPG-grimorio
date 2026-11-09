@@ -11,6 +11,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { campaignQuery, charactersQuery, membersQuery, errMsg, type Character } from "@/lib/rpg";
 
 export const Route = createFileRoute("/_authenticated/campanha/$id/fichas")({
+  head: () => ({ meta: [
+    { title: "Fichas da campanha — Grimório" },
+    { name: "description", content: "Personagens e anotações da sua campanha de RPG." },
+    { property: "og:title", content: "Fichas da campanha — Grimório" },
+    { property: "og:description", content: "Personagens e anotações da sua campanha de RPG." },
+    { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" },
+  ] }),
   component: Fichas,
 });
 

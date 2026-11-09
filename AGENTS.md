@@ -30,6 +30,7 @@ use the editor.
 <!-- LOVABLE:END -->
 
 ## Campaign dice architecture
+- Create campaigns with a client-generated UUID and an insert without RETURNING; the owner membership trigger must finish before subsequent member-scoped reads.
 - Generate campaign dice through the database RPC, with cryptographic randomness and membership/character checks; never generate or accept results from the browser.
 - Keep dice history append-only for application users and snapshot roller/character names with typed groups so later edits cannot change recorded rolls.
 - Keep selection validation in `src/lib/dice.ts` and render recorded groups through `DiceResults` so the latest result and history agree.

@@ -11,6 +11,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { campaignQuery, membersQuery, errMsg } from "@/lib/rpg";
 
 export const Route = createFileRoute("/_authenticated/campanha/$id/mestra")({
+  head: () => ({ meta: [
+    { title: "Painel da mestra — Grimório" },
+    { name: "description", content: "Configurações, convites e participantes da campanha no Grimório." },
+    { property: "og:title", content: "Painel da mestra — Grimório" },
+    { property: "og:description", content: "Configurações, convites e participantes da campanha no Grimório." },
+    { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" },
+  ] }),
   component: PainelMestra,
 });
 

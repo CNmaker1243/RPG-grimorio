@@ -23,15 +23,25 @@ export async function currentUserId() {
   return data.user?.id ?? null;
 }
 
+export async function createCampaign(name: string) {
+  const uid = await currentUserId();
+  if (!uid) throw new Error("Entre para criar uma campanha.");
+  const id = crypto.randomUUID();
+  const { error } = await supabase.from("campaigns").insert({ id, name: name.trim(), owner_id: uid });
+  if (error) throw error;
+  return id;
+}
+
 export const myCampaignsQuery = () =>
   queryOptions({
     queryKey: ["my-campaigns"],
     queryFn: async () => {
       const uid = await currentUserId();
+      if (!uid) throw new Error("Entre para acessar suas campanhas.");
       const { data, error } = await supabase
         .from("campaign_members")
         .select("role, campaign:campaigns(*)")
-        .eq("user_id", uid!)
+        .eq("user_id", uid)
         .order("joined_at", { ascending: false });
       if (error) throw error;
       return (data ?? []).filter((r) => r.campaign) as { role: Member["role"]; campaign: Campaign }[];
@@ -43,6 +53,7 @@ export const campaignQuery = (id: string) =>
     queryKey: ["campaign", id],
     queryFn: async () => {
       const uid = await currentUserId();
+      if (!uid) throw new Error("Entre para acessar a campanha.");
       const { data: campaign, error } = await supabase.from("campaigns").select("*").eq("id", id).maybeSingle();
       if (error) throw error;
       if (!campaign) return null;
@@ -50,9 +61,9 @@ export const campaignQuery = (id: string) =>
         .from("campaign_members")
         .select("*")
         .eq("campaign_id", id)
-        .eq("user_id", uid!)
+        .eq("user_id", uid)
         .maybeSingle();
-      return { campaign, me, userId: uid! };
+      return { campaign, me, userId: uid };
     },
   });
 
@@ -89,16 +100,16 @@ export const charactersQuery = (campaignId: string) =>
     },
   });
 
-export const rollsQuery = (campaignId: string) =>
+export const rollsQuery = (campaignId: string, limit = 50) =>
   queryOptions({
-    queryKey: ["rolls", campaignId],
+    queryKey: ["rolls", campaignId, limit],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("dice_rolls")
         .select("*")
         .eq("campaign_id", campaignId)
         .order("created_at", { ascending: false })
-        .limit(50);
+        .limit(limit);
       if (error) throw error;
       return data ?? [];
     },
