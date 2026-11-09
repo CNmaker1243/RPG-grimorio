@@ -1,0 +1,2 @@
+ALTER TABLE public.characters DROP CONSTRAINT characters_template_id_fkey;
+ALTER TABLE public.characters ADD CONSTRAINT characters_template_id_fkey FOREIGN KEY (template_id) REFERENCES public.sheet_templates(id) ON DELETE NO ACTION DEFERRABLE INITIALLY DEFERRED;

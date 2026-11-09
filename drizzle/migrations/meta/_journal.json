@@ -29,6 +29,13 @@
       "when": 1794249173363,
       "tag": "0003_fix_sheet_skill_attribute_validation",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1794249405929,
+      "tag": "0004_preserve_campaign_deletion_with_sheet_templates",
+      "breakpoints": true
     }
   ]
 }
