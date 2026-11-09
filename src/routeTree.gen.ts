@@ -18,6 +18,7 @@ import { Route as ConviteCodeRouteImport } from './routes/convite.$code'
 import { Route as AuthenticatedCampanhaIdRouteImport } from './routes/_authenticated/campanha.$id'
 import { Route as AuthenticatedCampanhaIdIndexRouteImport } from './routes/_authenticated/campanha.$id.index'
 import { Route as AuthenticatedCampanhaIdFichasRouteImport } from './routes/_authenticated/campanha.$id.fichas'
+import { Route as AuthenticatedCampanhaIdItensRouteImport } from './routes/_authenticated/campanha.$id.itens'
 import { Route as AuthenticatedCampanhaIdMestraRouteImport } from './routes/_authenticated/campanha.$id.mestra'
 
 const IndexRoute = IndexRouteImport.update({
@@ -66,6 +67,12 @@ const AuthenticatedCampanhaIdFichasRoute =
     path: '/fichas',
     getParentRoute: () => AuthenticatedCampanhaIdRoute,
   } as any)
+const AuthenticatedCampanhaIdItensRoute =
+  AuthenticatedCampanhaIdItensRouteImport.update({
+    id: '/itens',
+    path: '/itens',
+    getParentRoute: () => AuthenticatedCampanhaIdRoute,
+  } as any)
 const AuthenticatedCampanhaIdMestraRoute =
   AuthenticatedCampanhaIdMestraRouteImport.update({
     id: '/mestra',
@@ -81,6 +88,7 @@ export interface FileRoutesByFullPath {
   '/convite/$code': typeof ConviteCodeRoute
   '/campanha/$id': typeof AuthenticatedCampanhaIdRouteWithChildren
   '/campanha/$id/fichas': typeof AuthenticatedCampanhaIdFichasRoute
+  '/campanha/$id/itens': typeof AuthenticatedCampanhaIdItensRoute
   '/campanha/$id/mestra': typeof AuthenticatedCampanhaIdMestraRoute
   '/campanha/$id/': typeof AuthenticatedCampanhaIdIndexRoute
 }
@@ -91,6 +99,7 @@ export interface FileRoutesByTo {
   '/painel': typeof AuthenticatedPainelRoute
   '/convite/$code': typeof ConviteCodeRoute
   '/campanha/$id/fichas': typeof AuthenticatedCampanhaIdFichasRoute
+  '/campanha/$id/itens': typeof AuthenticatedCampanhaIdItensRoute
   '/campanha/$id/mestra': typeof AuthenticatedCampanhaIdMestraRoute
   '/campanha/$id': typeof AuthenticatedCampanhaIdIndexRoute
 }
@@ -104,6 +113,7 @@ export interface FileRoutesById {
   '/convite/$code': typeof ConviteCodeRoute
   '/_authenticated/campanha/$id': typeof AuthenticatedCampanhaIdRouteWithChildren
   '/_authenticated/campanha/$id/fichas': typeof AuthenticatedCampanhaIdFichasRoute
+  '/_authenticated/campanha/$id/itens': typeof AuthenticatedCampanhaIdItensRoute
   '/_authenticated/campanha/$id/mestra': typeof AuthenticatedCampanhaIdMestraRoute
   '/_authenticated/campanha/$id/': typeof AuthenticatedCampanhaIdIndexRoute
 }
@@ -117,6 +127,7 @@ export interface FileRouteTypes {
     | '/convite/$code'
     | '/campanha/$id'
     | '/campanha/$id/fichas'
+    | '/campanha/$id/itens'
     | '/campanha/$id/mestra'
     | '/campanha/$id/'
   fileRoutesByTo: FileRoutesByTo
@@ -127,6 +138,7 @@ export interface FileRouteTypes {
     | '/painel'
     | '/convite/$code'
     | '/campanha/$id/fichas'
+    | '/campanha/$id/itens'
     | '/campanha/$id/mestra'
     | '/campanha/$id'
   id:
@@ -139,6 +151,7 @@ export interface FileRouteTypes {
     | '/convite/$code'
     | '/_authenticated/campanha/$id'
     | '/_authenticated/campanha/$id/fichas'
+    | '/_authenticated/campanha/$id/itens'
     | '/_authenticated/campanha/$id/mestra'
     | '/_authenticated/campanha/$id/'
   fileRoutesById: FileRoutesById
@@ -215,6 +228,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCampanhaIdFichasRouteImport
       parentRoute: typeof AuthenticatedCampanhaIdRoute
     }
+    '/_authenticated/campanha/$id/itens': {
+      id: '/_authenticated/campanha/$id/itens'
+      path: '/itens'
+      fullPath: '/campanha/$id/itens'
+      preLoaderRoute: typeof AuthenticatedCampanhaIdItensRouteImport
+      parentRoute: typeof AuthenticatedCampanhaIdRoute
+    }
     '/_authenticated/campanha/$id/mestra': {
       id: '/_authenticated/campanha/$id/mestra'
       path: '/mestra'
@@ -227,6 +247,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedCampanhaIdRouteChildren {
   AuthenticatedCampanhaIdFichasRoute: typeof AuthenticatedCampanhaIdFichasRoute
+  AuthenticatedCampanhaIdItensRoute: typeof AuthenticatedCampanhaIdItensRoute
   AuthenticatedCampanhaIdMestraRoute: typeof AuthenticatedCampanhaIdMestraRoute
   AuthenticatedCampanhaIdIndexRoute: typeof AuthenticatedCampanhaIdIndexRoute
 }
@@ -234,6 +255,7 @@ interface AuthenticatedCampanhaIdRouteChildren {
 const AuthenticatedCampanhaIdRouteChildren: AuthenticatedCampanhaIdRouteChildren =
   {
     AuthenticatedCampanhaIdFichasRoute: AuthenticatedCampanhaIdFichasRoute,
+    AuthenticatedCampanhaIdItensRoute: AuthenticatedCampanhaIdItensRoute,
     AuthenticatedCampanhaIdMestraRoute: AuthenticatedCampanhaIdMestraRoute,
     AuthenticatedCampanhaIdIndexRoute: AuthenticatedCampanhaIdIndexRoute,
   }

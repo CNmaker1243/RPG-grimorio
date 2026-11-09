@@ -13,6 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { campaignQuery, charactersQuery, membersQuery, rollsQuery, errMsg, type DiceRoll } from "@/lib/rpg";
 import { DICE_SIDES, diceExpression, validateDice, type RollMode } from "@/lib/dice";
 import { SuccessTestRoller } from "@/components/SuccessTests";
+import { CombatPanel } from "@/components/Combat";
 import { useSheetUpdates } from "@/hooks/use-sheet-updates";
 
 export const Route = createFileRoute("/_authenticated/campanha/$id/")({
@@ -120,12 +121,13 @@ function Sala() {
           <div className="flex items-center justify-between gap-4"><div className="min-w-0"><h2 className="text-2xl font-semibold">Seu resultado</h2><p className="break-words font-mono text-sm text-muted-foreground">{latest.expression}</p></div><div className="shrink-0 text-right"><p className="text-xs uppercase text-muted-foreground">Total</p><p className="font-display text-5xl font-bold text-primary" data-testid="latest-total">{latest.total}</p></div></div>
           <DiceResults roll={latest} />
         </section>}
+        <CombatPanel id={id} />
         <SuccessTestRoller id={id} />
         <section className="min-w-0" aria-label="Histórico de rolagens">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-2"><h2 className="text-2xl font-semibold">Histórico de rolagens</h2><span className="flex items-center gap-1 text-xs text-muted-foreground"><Radio className={`h-3 w-3 ${live ? "text-primary" : "text-muted-foreground"}`} />{live ? "Ao vivo" : "Reconectando…"}</span></div>
           {history.isPending ? <p className="text-sm text-muted-foreground">Carregando rolagens…</p> : history.isError ? <div className="space-y-2"><p className="text-sm text-destructive">Não foi possível carregar o histórico.</p><Button variant="secondary" onClick={() => history.refetch()}>Tentar novamente</Button></div> : !history.data?.length ? <p className="py-5 text-sm text-muted-foreground">Nenhuma rolagem ainda.</p> : <ol className="divide-y divide-border">
             {history.data.map(r => <li key={r.id} className="space-y-3 py-5" data-roll-id={r.id}>
-              <div className="flex items-start justify-between gap-4"><div className="min-w-0 space-y-1"><p className="break-words text-sm"><strong>{nameOf(r)}</strong>{r.character_name && <span className="text-muted-foreground"> · {r.character_name}</span>}</p><p className="break-words font-mono text-sm">{r.expression}</p><p className="text-xs text-muted-foreground">{r.roll_mode === "success" ? "Teste de sucesso" : r.roll_mode === "combined" ? "Combinada" : "Individual"} · <time dateTime={r.created_at}>{new Date(r.created_at).toLocaleString("pt-BR")}</time></p>{r.label && <p className="break-words text-sm text-muted-foreground">{r.label}</p>}</div>{r.roll_mode !== "success" && <div className="shrink-0 text-right"><p className="text-xs text-muted-foreground">Total</p><p className="font-display text-3xl font-bold text-primary">{r.total}</p></div>}</div>
+              <div className="flex items-start justify-between gap-4"><div className="min-w-0 space-y-1"><p className="break-words text-sm"><strong>{nameOf(r)}</strong>{r.character_name && <span className="text-muted-foreground"> · {r.character_name}</span>}</p><p className="break-words font-mono text-sm">{r.expression}</p><p className="text-xs text-muted-foreground">{r.roll_mode === "success" ? "Teste de sucesso" : r.roll_mode === "combat" ? "Combate" : r.roll_mode === "combined" ? "Combinada" : "Individual"} · <time dateTime={r.created_at}>{new Date(r.created_at).toLocaleString("pt-BR")}</time></p>{r.label && <p className="break-words text-sm text-muted-foreground">{r.label}</p>}</div>{r.roll_mode !== "success" && <div className="shrink-0 text-right"><p className="text-xs text-muted-foreground">Total</p><p className="font-display text-3xl font-bold text-primary">{r.total}</p></div>}</div>
               <DiceResults roll={r} />
             </li>)}
           </ol>}

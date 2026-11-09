@@ -82,6 +82,55 @@ export type Database = {
         }
         Relationships: []
       }
+      character_items: {
+        Row: {
+          campaign_id: string
+          character_id: string
+          created_at: string
+          id: string
+          item_id: string
+          quantity: number
+        }
+        Insert: {
+          campaign_id: string
+          character_id: string
+          created_at?: string
+          id?: string
+          item_id: string
+          quantity?: number
+        }
+        Update: {
+          campaign_id?: string
+          character_id?: string
+          created_at?: string
+          id?: string
+          item_id?: string
+          quantity?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "character_items_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "character_items_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "character_items_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       characters: {
         Row: {
           campaign_id: string
@@ -133,11 +182,131 @@ export type Database = {
           },
         ]
       }
+      combats: {
+        Row: {
+          attack_highest: number | null
+          attack_results: number[]
+          attacker_attribute_id: string
+          attacker_attribute_name: string
+          attacker_character_id: string | null
+          attacker_name: string
+          attacker_value: number
+          campaign_id: string
+          created_at: string
+          created_by: string
+          damage_formula: string
+          damage_roll_id: string | null
+          damage_total: number | null
+          defender_attribute_id: string | null
+          defender_attribute_name: string | null
+          defender_character_id: string | null
+          defender_name: string
+          defender_value: number | null
+          defense_highest: number | null
+          defense_results: number[]
+          id: string
+          item_id: string | null
+          item_name: string
+          round: number
+          status: string
+          tiebreak: string
+          updated_at: string
+        }
+        Insert: {
+          attack_highest?: number | null
+          attack_results?: number[]
+          attacker_attribute_id: string
+          attacker_attribute_name: string
+          attacker_character_id?: string | null
+          attacker_name: string
+          attacker_value: number
+          campaign_id: string
+          created_at?: string
+          created_by: string
+          damage_formula?: string
+          damage_roll_id?: string | null
+          damage_total?: number | null
+          defender_attribute_id?: string | null
+          defender_attribute_name?: string | null
+          defender_character_id?: string | null
+          defender_name: string
+          defender_value?: number | null
+          defense_highest?: number | null
+          defense_results?: number[]
+          id?: string
+          item_id?: string | null
+          item_name?: string
+          round?: number
+          status?: string
+          tiebreak?: string
+          updated_at?: string
+        }
+        Update: {
+          attack_highest?: number | null
+          attack_results?: number[]
+          attacker_attribute_id?: string
+          attacker_attribute_name?: string
+          attacker_character_id?: string | null
+          attacker_name?: string
+          attacker_value?: number
+          campaign_id?: string
+          created_at?: string
+          created_by?: string
+          damage_formula?: string
+          damage_roll_id?: string | null
+          damage_total?: number | null
+          defender_attribute_id?: string | null
+          defender_attribute_name?: string | null
+          defender_character_id?: string | null
+          defender_name?: string
+          defender_value?: number | null
+          defense_highest?: number | null
+          defense_results?: number[]
+          id?: string
+          item_id?: string | null
+          item_name?: string
+          round?: number
+          status?: string
+          tiebreak?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "combats_attacker_character_id_fkey"
+            columns: ["attacker_character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "combats_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "combats_defender_character_id_fkey"
+            columns: ["defender_character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "combats_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       dice_rolls: {
         Row: {
           campaign_id: string
           character_id: string | null
           character_name: string
+          combat_data: Json | null
           created_at: string
           dice_groups: Json
           expression: string
@@ -155,6 +324,7 @@ export type Database = {
           campaign_id: string
           character_id?: string | null
           character_name?: string
+          combat_data?: Json | null
           created_at?: string
           dice_groups?: Json
           expression: string
@@ -172,6 +342,7 @@ export type Database = {
           campaign_id?: string
           character_id?: string | null
           character_name?: string
+          combat_data?: Json | null
           created_at?: string
           dice_groups?: Json
           expression?: string
@@ -188,6 +359,56 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "dice_rolls_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      items: {
+        Row: {
+          attributes: Json
+          bonuses: Json
+          campaign_id: string
+          category: string
+          created_at: string
+          damage_formula: string
+          description: string
+          id: string
+          name: string
+          properties: Json
+          updated_at: string
+        }
+        Insert: {
+          attributes?: Json
+          bonuses?: Json
+          campaign_id: string
+          category?: string
+          created_at?: string
+          damage_formula?: string
+          description?: string
+          id?: string
+          name: string
+          properties?: Json
+          updated_at?: string
+        }
+        Update: {
+          attributes?: Json
+          bonuses?: Json
+          campaign_id?: string
+          category?: string
+          created_at?: string
+          damage_formula?: string
+          description?: string
+          id?: string
+          name?: string
+          properties?: Json
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "items_campaign_id_fkey"
             columns: ["campaign_id"]
             isOneToOne: false
             referencedRelation: "campaigns"
@@ -360,6 +581,288 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_see_item: { Args: { _item: string; _user: string }; Returns: boolean }
+      character_attribute: {
+        Args: {
+          _attr: string
+          _character: Database["public"]["Tables"]["characters"]["Row"]
+        }
+        Returns: Record<string, unknown>
+      }
+      combat_attack: {
+        Args: {
+          _attacker: string
+          _attribute: string
+          _defender: string
+          _item?: string
+        }
+        Returns: {
+          attack_highest: number | null
+          attack_results: number[]
+          attacker_attribute_id: string
+          attacker_attribute_name: string
+          attacker_character_id: string | null
+          attacker_name: string
+          attacker_value: number
+          campaign_id: string
+          created_at: string
+          created_by: string
+          damage_formula: string
+          damage_roll_id: string | null
+          damage_total: number | null
+          defender_attribute_id: string | null
+          defender_attribute_name: string | null
+          defender_character_id: string | null
+          defender_name: string
+          defender_value: number | null
+          defense_highest: number | null
+          defense_results: number[]
+          id: string
+          item_id: string | null
+          item_name: string
+          round: number
+          status: string
+          tiebreak: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "combats"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      combat_cancel: {
+        Args: { _combat: string }
+        Returns: {
+          attack_highest: number | null
+          attack_results: number[]
+          attacker_attribute_id: string
+          attacker_attribute_name: string
+          attacker_character_id: string | null
+          attacker_name: string
+          attacker_value: number
+          campaign_id: string
+          created_at: string
+          created_by: string
+          damage_formula: string
+          damage_roll_id: string | null
+          damage_total: number | null
+          defender_attribute_id: string | null
+          defender_attribute_name: string | null
+          defender_character_id: string | null
+          defender_name: string
+          defender_value: number | null
+          defense_highest: number | null
+          defense_results: number[]
+          id: string
+          item_id: string | null
+          item_name: string
+          round: number
+          status: string
+          tiebreak: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "combats"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      combat_damage: {
+        Args: { _combat: string }
+        Returns: {
+          attack_highest: number | null
+          attack_results: number[]
+          attacker_attribute_id: string
+          attacker_attribute_name: string
+          attacker_character_id: string | null
+          attacker_name: string
+          attacker_value: number
+          campaign_id: string
+          created_at: string
+          created_by: string
+          damage_formula: string
+          damage_roll_id: string | null
+          damage_total: number | null
+          defender_attribute_id: string | null
+          defender_attribute_name: string | null
+          defender_character_id: string | null
+          defender_name: string
+          defender_value: number | null
+          defense_highest: number | null
+          defense_results: number[]
+          id: string
+          item_id: string | null
+          item_name: string
+          round: number
+          status: string
+          tiebreak: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "combats"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      combat_defend: {
+        Args: { _combat: string }
+        Returns: {
+          attack_highest: number | null
+          attack_results: number[]
+          attacker_attribute_id: string
+          attacker_attribute_name: string
+          attacker_character_id: string | null
+          attacker_name: string
+          attacker_value: number
+          campaign_id: string
+          created_at: string
+          created_by: string
+          damage_formula: string
+          damage_roll_id: string | null
+          damage_total: number | null
+          defender_attribute_id: string | null
+          defender_attribute_name: string | null
+          defender_character_id: string | null
+          defender_name: string
+          defender_value: number | null
+          defense_highest: number | null
+          defense_results: number[]
+          id: string
+          item_id: string | null
+          item_name: string
+          round: number
+          status: string
+          tiebreak: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "combats"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      combat_reroll_attack: {
+        Args: { _combat: string }
+        Returns: {
+          attack_highest: number | null
+          attack_results: number[]
+          attacker_attribute_id: string
+          attacker_attribute_name: string
+          attacker_character_id: string | null
+          attacker_name: string
+          attacker_value: number
+          campaign_id: string
+          created_at: string
+          created_by: string
+          damage_formula: string
+          damage_roll_id: string | null
+          damage_total: number | null
+          defender_attribute_id: string | null
+          defender_attribute_name: string | null
+          defender_character_id: string | null
+          defender_name: string
+          defender_value: number | null
+          defense_highest: number | null
+          defense_results: number[]
+          id: string
+          item_id: string | null
+          item_name: string
+          round: number
+          status: string
+          tiebreak: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "combats"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      combat_roll_d20: {
+        Args: {
+          _cb: Database["public"]["Tables"]["combats"]["Row"]
+          _character: string
+          _count: number
+          _label: string
+          _phase: string
+        }
+        Returns: {
+          campaign_id: string
+          character_id: string | null
+          character_name: string
+          combat_data: Json | null
+          created_at: string
+          dice_groups: Json
+          expression: string
+          id: string
+          label: string
+          modifier: number
+          results: number[]
+          roll_mode: string
+          roller_name: string
+          success_data: Json | null
+          total: number
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "dice_rolls"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      combat_roster: {
+        Args: { _campaign: string }
+        Returns: {
+          id: string
+          name: string
+          owner_id: string
+        }[]
+      }
+      combat_set_defense: {
+        Args: { _attribute: string; _combat: string }
+        Returns: {
+          attack_highest: number | null
+          attack_results: number[]
+          attacker_attribute_id: string
+          attacker_attribute_name: string
+          attacker_character_id: string | null
+          attacker_name: string
+          attacker_value: number
+          campaign_id: string
+          created_at: string
+          created_by: string
+          damage_formula: string
+          damage_roll_id: string | null
+          damage_total: number | null
+          defender_attribute_id: string | null
+          defender_attribute_name: string | null
+          defender_character_id: string | null
+          defender_name: string
+          defender_value: number | null
+          defense_highest: number | null
+          defense_results: number[]
+          id: string
+          item_id: string | null
+          item_name: string
+          round: number
+          status: string
+          tiebreak: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "combats"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       is_member: {
         Args: { _campaign: string; _user: string }
         Returns: boolean
@@ -369,6 +872,7 @@ export type Database = {
         Returns: boolean
       }
       join_campaign: { Args: { _code: string }; Returns: string }
+      parse_damage_formula: { Args: { _formula: string }; Returns: Json }
       regenerate_invite: { Args: { _campaign: string }; Returns: string }
       roll_dice: {
         Args: {
@@ -382,6 +886,7 @@ export type Database = {
           campaign_id: string
           character_id: string | null
           character_name: string
+          combat_data: Json | null
           created_at: string
           dice_groups: Json
           expression: string
@@ -415,6 +920,7 @@ export type Database = {
           campaign_id: string
           character_id: string | null
           character_name: string
+          combat_data: Json | null
           created_at: string
           dice_groups: Json
           expression: string
@@ -441,6 +947,7 @@ export type Database = {
           campaign_id: string
           character_id: string | null
           character_name: string
+          combat_data: Json | null
           created_at: string
           dice_groups: Json
           expression: string

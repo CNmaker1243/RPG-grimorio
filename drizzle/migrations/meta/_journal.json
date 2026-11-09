@@ -36,6 +36,20 @@
       "when": 1794249405929,
       "tag": "0004_preserve_campaign_deletion_with_sheet_templates",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1794250462111,
+      "tag": "0005_items_and_combat",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1794250487892,
+      "tag": "0006_combat_roster",
+      "breakpoints": true
     }
   ]
 }

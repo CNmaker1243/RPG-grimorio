@@ -44,6 +44,9 @@ function CampaignLayout() {
         <Link to="/campanha/$id/fichas" params={{ id }} className={tab} activeProps={active}>
           {isMestra ? "Fichas" : "Minhas fichas"}
         </Link>
+        <Link to="/campanha/$id/itens" params={{ id }} className={tab} activeProps={active}>
+          {isMestra ? "Itens" : "Meus itens"}
+        </Link>
         {isMestra && (
           <Link to="/campanha/$id/mestra" params={{ id }} className={`${tab} flex items-center gap-1`} activeProps={active}>
             <Crown className="h-4 w-4" /> Painel da mestra
