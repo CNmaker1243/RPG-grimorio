@@ -16,3 +16,9 @@
 - [x] Add d20 attack/defense duels with highest-die comparison, attribute tiebreak, reroll on full tie, and item damage on attacker win.
 - [x] Record attack, defense and damage in the public immutable history with full combat details.
 - [x] Verify rules, permissions and authenticated desktop/mobile flows.
+
+# Full application audit
+- [ ] Review all modules and correct functional, navigation and security defects.
+- [ ] Exercise backend permissions as a real authenticated player and campaign owner.
+- [ ] Verify persisted rolls, real-time updates and desktop/mobile navigation.
+- [ ] Record tested outcomes and explicit verification limits.
