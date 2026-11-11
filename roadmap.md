@@ -9,3 +9,10 @@
 - [x] Add master editors and customizable character sheets.
 - [x] Integrate d10 tests with public immutable dice history.
 - [x] Verify rules and authenticated desktop/mobile flows.
+
+# Items and combat
+- [x] Add GM-only items (categories, bonuses, custom attributes/properties, safe damage formulas) with server validation.
+- [x] Let the mestra assign items to character sheets and players view them.
+- [x] Add d20 attack/defense duels with highest-die comparison, attribute tiebreak, reroll on full tie, and item damage on attacker win.
+- [x] Record attack, defense and damage in the public immutable history with full combat details.
+- [x] Verify rules, permissions and authenticated desktop/mobile flows.

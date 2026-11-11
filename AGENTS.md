@@ -40,3 +40,9 @@ use the editor.
 - Keep template field IDs stable across renames and store character values by those IDs; template deletion is restricted while sheets use it.
 - Define reusable success tests through master-only rows; the dice RPC derives the pool and difficulty from stored rows and snapshots the outcome in existing dice history.
 - Use `src/lib/sheets.ts` for typed queries and parsing, focused sheet editors for presentation, and `useSheetUpdates` for shared cache refresh after campaign changes.
+
+## Items and combat architecture
+- Items, sheet assignments and combats are validated by database triggers and security-definer RPCs (combat_attack, combat_set_defense, combat_defend, combat_reroll_attack, combat_damage, combat_cancel); the browser never decides outcomes.
+- Damage formulas are parsed by parse_damage_formula (SQL) mirrored in src/lib/combat.ts — a restricted dice-expression parser, never eval.
+- Combat rolls reuse roll_dice_combined and are tagged roll_mode='combat' with a combat_data snapshot in dice_rolls, so the public history stays the single source of truth.
+- Players cannot read other characters; combat target selection uses the combat_roster RPC (id/name/owner only).
