@@ -46,3 +46,8 @@ use the editor.
 - Damage formulas are parsed by parse_damage_formula (SQL) mirrored in src/lib/combat.ts — a restricted dice-expression parser, never eval.
 - Combat rolls reuse roll_dice_combined and are tagged roll_mode='combat' with a combat_data snapshot in dice_rolls, so the public history stays the single source of truth.
 - Players cannot read other characters; combat target selection uses the combat_roster RPC (id/name/owner only).
+
+## Audit access boundaries
+- Require active campaign membership for character and inventory reads and writes, including former owners, so removal revokes every related access path.
+- Clear query caches on sign-out and periodically revalidate campaign membership; scoped realtime subscriptions avoid unrelated campaign refreshes.
+- Keep public invite pages public with an inline sign-in action and return confirmation links to the public auth page before protected navigation.

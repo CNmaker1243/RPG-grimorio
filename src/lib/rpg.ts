@@ -9,7 +9,7 @@ export type DiceRoll = Database["public"]["Tables"]["dice_rolls"]["Row"];
 export type Profile = Database["public"]["Tables"]["profiles"]["Row"];
 
 export function safeRedirect(path: unknown): string {
-  if (typeof path !== "string" || !path.startsWith("/") || path.startsWith("//")) return "/painel";
+  if (typeof path !== "string" || !path.startsWith("/") || path.startsWith("//") || /[\\\x00-\x1f\x7f]/.test(path)) return "/painel";
   return path;
 }
 
@@ -51,6 +51,7 @@ export const myCampaignsQuery = () =>
 export const campaignQuery = (id: string) =>
   queryOptions({
     queryKey: ["campaign", id],
+    refetchInterval: 30000,
     queryFn: async () => {
       const uid = await currentUserId();
       if (!uid) throw new Error("Entre para acessar a campanha.");

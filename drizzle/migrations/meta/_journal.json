@@ -50,6 +50,13 @@
       "when": 1794250487892,
       "tag": "0006_combat_roster",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1794442919664,
+      "tag": "0007_audit_membership_access",
+      "breakpoints": true
     }
   ]
 }

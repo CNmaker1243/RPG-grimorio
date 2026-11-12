@@ -69,7 +69,7 @@ function AuthPage() {
           email,
           password,
           options: {
-            emailRedirectTo: window.location.origin + target,
+            emailRedirectTo: window.location.origin + "/auth",
             data: { display_name: name.trim() },
           },
         });
@@ -84,9 +84,14 @@ function AuthPage() {
   }
 
   async function google() {
+    if (busy) return;
+    setBusy(true);
     sessionStorage.setItem(STORE, target);
-    const r = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin + "/auth" });
-    if (r.error) toast.error(errMsg(r.error));
+    try {
+      const r = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin + "/auth" });
+      if (r.error) toast.error(errMsg(r.error));
+    } catch (e) { toast.error(errMsg(e)); }
+    finally { setBusy(false); }
   }
 
   return (

@@ -1,7 +1,8 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { errMsg } from "@/lib/rpg";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/convite/$code")({
   ssr: false,
@@ -22,21 +23,34 @@ function Invite() {
   const { code } = Route.useParams();
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
+  const [signedOut, setSignedOut] = useState(false);
   useEffect(() => {
+    let active = true;
+    setError(null);
+    setSignedOut(false);
     (async () => {
+      try {
       const { data } = await supabase.auth.getUser();
+      if (!active) return;
       if (!data.user) {
-        navigate({ to: "/auth", search: { redirect: `/convite/${code}` }, replace: true });
+        setSignedOut(true);
         return;
       }
       const { data: id, error } = await supabase.rpc("join_campaign", { _code: code });
+      if (!active) return;
       if (error) { setError(errMsg(error)); return; }
-      navigate({ to: "/campanha/$id", params: { id: id as string }, replace: true });
+      if (!id) { setError("Não foi possível entrar na campanha."); return; }
+      navigate({ to: "/campanha/$id", params: { id }, replace: true });
+      } catch (e) { if (active) setError(errMsg(e)); }
     })();
+    return () => { active = false; };
   }, [code, navigate]);
   return (
     <div className="flex min-h-screen items-center justify-center px-4 text-center">
-      {error ? <p className="text-destructive">{error}</p> : <p className="text-muted-foreground">Entrando na campanha...</p>}
+      <div className="space-y-4">
+        {signedOut ? <Button asChild><Link to="/auth" search={{redirect:`/convite/${encodeURIComponent(code)}`}}>Entrar para aceitar convite</Link></Button> : error ? <p role="alert" className="text-destructive">{error}</p> : <p className="text-muted-foreground">Entrando na campanha...</p>}
+        {error && <Button asChild variant="secondary"><Link to="/painel">Voltar ao painel</Link></Button>}
+      </div>
     </div>
   );
 }

@@ -18,7 +18,10 @@
 - [x] Verify rules, permissions and authenticated desktop/mobile flows.
 
 # Full application audit
-- [ ] Review all modules and correct functional, navigation and security defects.
-- [ ] Exercise backend permissions as a real authenticated player and campaign owner.
-- [ ] Verify persisted rolls, real-time updates and desktop/mobile navigation.
-- [ ] Record tested outcomes and explicit verification limits.
+- [x] Review modules and correct confirmed access-revocation and invitation defects.
+- [x] Exercise backend permissions as a real authenticated player and campaign owner.
+- [x] Verify persisted rolls, same-account live updates and desktop/mobile navigation.
+- [x] Record tested outcomes and explicit verification limits in AUDIT.md.
+- [ ] Verify signup/email/password/Google completion — needs a real account/provider flow.
+- [ ] Verify live updates across distinct users — needs a second authorized session.
+- [ ] Certify forced database tie/reroll and all pointer-selection states — unverified execution paths, not a readiness claim.

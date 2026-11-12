@@ -28,7 +28,10 @@ export function parseDamageFormula(formula: string): { dice: DiceSelection[]; mo
   if (total < 1) return "A fórmula precisa de pelo menos um dado.";
   if (total > 100) return "Máximo de 100 dados por fórmula.";
   if (Math.abs(modifier) > 10000) return "Modificador muito alto.";
-  return { dice: DICE_SIDES.flatMap(s => counts.has(s) ? [{ sides: s, count: counts.get(s)! }] : []), modifier };
+  return { dice: DICE_SIDES.flatMap(s => {
+    const count = counts.get(s);
+    return count === undefined ? [] : [{ sides: s, count }];
+  }), modifier };
 }
 
 export type DuelOutcome = "attacker_won" | "defender_won" | "awaiting_reroll";
@@ -53,7 +56,7 @@ export const STATUS_LABEL: Record<string, string> = {
   awaiting_reroll: "Empate total — atacante rola novamente",
   attacker_won: "Atacante venceu",
   defender_won: "Defensor venceu",
-  damage_rolled: "Dano aplicado",
+  damage_rolled: "Dano rolado",
   cancelled: "Encerrado pela mestra",
 };
 

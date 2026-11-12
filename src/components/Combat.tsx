@@ -41,7 +41,7 @@ export function CombatPanel({ id }: { id: string }) {
   const a = mine.find(c => c.id === attacker);
   const attrs = attributesOf(a, templates);
   const chosen = attrs.find(x => x.id === attr);
-  const weapons = (items.data?.links ?? []).filter(l => l.character_id === attacker).flatMap(l => items.data!.items.filter(i => i.id === l.item_id && i.damage_formula));
+  const weapons = (items.data?.links ?? []).filter(l => l.character_id === attacker).flatMap(l => (items.data?.items ?? []).filter(i => i.id === l.item_id && i.damage_formula));
   const controls = (charId: string | null) => master || roster.data?.some(r => r.id === charId && r.owner_id === uid);
 
   async function call(fn: () => PromiseLike<{ error: unknown }>, ok?: string) {
