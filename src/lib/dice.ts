@@ -2,6 +2,9 @@ export const DICE_SIDES = [4, 6, 8, 10, 12, 20, 100] as const;
 export type RollMode = "individual" | "combined";
 export type DiceSelection = { sides: number; count: number };
 export type DiceGroup = DiceSelection & { results: number[] };
+export function validCombinedQuantities(quantities: Record<number, number>) {
+  return DICE_SIDES.every(s => quantities[s] === undefined || (Number.isInteger(quantities[s]) && quantities[s] >= 0 && quantities[s] <= 100));
+}
 
 export function validateDice(dice: DiceSelection[], mode: RollMode): string | null {
   if (!dice.length) return "Selecione pelo menos um dado.";

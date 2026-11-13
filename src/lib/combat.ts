@@ -77,5 +77,14 @@ export const rosterQuery = (campaignId: string) => queryOptions({
 });
 export const combatsQuery = (campaignId: string) => queryOptions({
   queryKey: ["combats", campaignId],
-  queryFn: async () => { const { data, error } = await supabase.from("combats").select("*").eq("campaign_id", campaignId).order("created_at", { ascending: false }).limit(20); if (error) throw error; return data ?? []; },
+  queryFn: async () => {
+    const active = ["awaiting_defense_attribute", "awaiting_defense", "awaiting_reroll", "attacker_won"];
+    const [open, recent] = await Promise.all([
+      supabase.from("combats").select("*").eq("campaign_id", campaignId).in("status", active).order("created_at", { ascending: false }),
+      supabase.from("combats").select("*").eq("campaign_id", campaignId).not("status", "in", `(${active.join(",")})`).order("created_at", { ascending: false }).limit(20),
+    ]);
+    if (open.error) throw open.error;
+    if (recent.error) throw recent.error;
+    return [...(open.data ?? []), ...(recent.data ?? [])];
+  },
 });

@@ -1,12 +1,21 @@
 import { queryOptions } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Json, Tables } from "@/integrations/supabase/types";
+import { integerInRange } from "@/lib/validation";
 
 export type Template = Tables<"sheet_templates">;
 export type Skill = Tables<"sheet_skills">;
 export type SuccessTest = Tables<"success_tests">;
 export type SheetField = { id: string; name: string; kind: "attribute" | "number" | "text" | "textarea" };
 export type SheetData = { values: Record<string, string | number>; skills: Record<string, number> };
+export function validSheetDraft(data: SheetData, fields: SheetField[], skills: Skill[]) {
+  return fields.every(f => {
+    const value = data.values[f.id];
+    return value === undefined || (f.kind === "attribute" || f.kind === "number"
+      ? integerInRange(value, 0, 100)
+      : typeof value === "string" && value.length <= 10000);
+  }) && skills.every(s => data.skills[s.id] === undefined || integerInRange(data.skills[s.id], 0, s.max_level));
+}
 export function readFields(value: Json): SheetField[] {
   if (!Array.isArray(value)) return [];
   return value.flatMap(f => f && typeof f === "object" && !Array.isArray(f) && typeof f['id'] === "string" && typeof f['name'] === "string" && (f['kind'] === "attribute" || f['kind'] === "number" || f['kind'] === "text" || f['kind'] === "textarea") ? [{id:f['id'],name:f['name'],kind:f['kind']}] : []);

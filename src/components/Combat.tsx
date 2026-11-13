@@ -42,7 +42,7 @@ export function CombatPanel({ id }: { id: string }) {
   const attrs = attributesOf(a, templates);
   const chosen = attrs.find(x => x.id === attr);
   const weapons = (items.data?.links ?? []).filter(l => l.character_id === attacker).flatMap(l => (items.data?.items ?? []).filter(i => i.id === l.item_id && i.damage_formula));
-  const controls = (charId: string | null) => master || roster.data?.some(r => r.id === charId && r.owner_id === uid);
+  const controls = (charId: string | null) => !!charId && (master || roster.data?.some(r => r.id === charId && r.owner_id === uid));
 
   async function call(fn: () => PromiseLike<{ error: unknown }>, ok?: string) {
     if (busy) return; setBusy(true);
@@ -74,6 +74,7 @@ export function CombatPanel({ id }: { id: string }) {
 
 function CombatCard({ cb, master, controlsAttacker, controlsDefender, defenderAttrs, busy, call }: { cb: Combat; master: boolean; controlsAttacker: boolean; controlsDefender: boolean; defenderAttrs: { id: string; name: string; value: number }[]; busy: boolean; call: (fn: () => PromiseLike<{ error: unknown }>, ok?: string) => Promise<void> }) {
   const [def, setDef] = useState("");
+  const validDef = defenderAttrs.some(x => x.id === def && Number.isInteger(x.value) && x.value >= 1 && x.value <= 100);
   const open = ["awaiting_defense_attribute", "awaiting_defense", "awaiting_reroll"].includes(cb.status);
   const tone = cb.status === "attacker_won" || cb.status === "damage_rolled" ? "text-primary" : cb.status === "defender_won" ? "text-destructive" : "text-muted-foreground";
   return <li className={`space-y-3 rounded-lg border p-4 ${open || (cb.status === "attacker_won" && cb.damage_formula) ? "border-primary bg-card" : "border-border"}`} data-combat-id={cb.id}>
@@ -85,12 +86,12 @@ function CombatCard({ cb, master, controlsAttacker, controlsDefender, defenderAt
     {cb.tiebreak && <p className="text-sm">Desempate: {cb.tiebreak}</p>}
     {cb.damage_total != null && <p className="text-lg">Dano final: <strong className="font-display text-3xl text-primary">{cb.damage_total}</strong> <span className="font-mono text-sm text-muted-foreground">({cb.damage_formula})</span></p>}
     <div className="flex flex-wrap items-center gap-2">
-      {cb.status === "awaiting_defense_attribute" && master && <><Select value={def} onValueChange={setDef}><SelectTrigger className="w-56" aria-label={`Atributo de defesa de ${cb.defender_name}`}><SelectValue placeholder="Atributo de defesa" /></SelectTrigger><SelectContent>{defenderAttrs.map(x => <SelectItem key={x.id} value={x.id}>{x.name} ({x.value})</SelectItem>)}</SelectContent></Select><Button disabled={busy || !def} onClick={() => call(() => supabase.rpc("combat_set_defense", { _combat: cb.id, _attribute: def }))}>Definir defesa</Button></>}
+      {cb.status === "awaiting_defense_attribute" && master && <><Select value={def} onValueChange={setDef}><SelectTrigger className="w-56" aria-label={`Atributo de defesa de ${cb.defender_name}`}><SelectValue placeholder="Atributo de defesa" /></SelectTrigger><SelectContent>{defenderAttrs.filter(x => x.value >= 1 && x.value <= 100).map(x => <SelectItem key={x.id} value={x.id}>{x.name} ({x.value})</SelectItem>)}</SelectContent></Select><Button disabled={busy || !validDef} onClick={() => call(() => supabase.rpc("combat_set_defense", { _combat: cb.id, _attribute: def }))}>Definir defesa</Button></>}
       {cb.status === "awaiting_defense_attribute" && !master && <p className="text-sm text-muted-foreground">A mestra escolherá o atributo de defesa.</p>}
-      {cb.status === "awaiting_defense" && controlsDefender && <Button disabled={busy} onClick={() => call(() => supabase.rpc("combat_defend", { _combat: cb.id }))}><Shield className="h-4 w-4" />Rolar defesa</Button>}
+      {cb.status === "awaiting_defense" && (controlsDefender || master) && <Button disabled={busy} onClick={() => call(() => supabase.rpc("combat_defend", { _combat: cb.id }))}><Shield className="h-4 w-4" />Rolar defesa</Button>}
       {cb.status === "awaiting_reroll" && controlsAttacker && <Button disabled={busy} onClick={() => call(() => supabase.rpc("combat_reroll_attack", { _combat: cb.id }))}><Swords className="h-4 w-4" />Rolar ataque novamente</Button>}
       {cb.status === "attacker_won" && cb.damage_formula && controlsAttacker && <Button disabled={busy} onClick={() => call(() => supabase.rpc("combat_damage", { _combat: cb.id }))}>Rolar dano ({cb.damage_formula})</Button>}
-      {open && master && <Button variant="ghost" size="sm" disabled={busy} onClick={() => confirm("Encerrar este combate?") && call(() => supabase.rpc("combat_cancel", { _combat: cb.id }))}>Encerrar</Button>}
+      {(open || (cb.status === "attacker_won" && !!cb.damage_formula)) && master && <Button variant="ghost" size="sm" disabled={busy} onClick={() => confirm("Encerrar este combate?") && call(() => supabase.rpc("combat_cancel", { _combat: cb.id }))}>Encerrar</Button>}
     </div>
   </li>;
 }

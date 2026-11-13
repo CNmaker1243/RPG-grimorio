@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { DiceResults } from "@/components/DiceResults";
 import { supabase } from "@/integrations/supabase/client";
 import { campaignQuery, charactersQuery, membersQuery, rollsQuery, errMsg, type DiceRoll } from "@/lib/rpg";
-import { DICE_SIDES, diceExpression, validateDice, type RollMode } from "@/lib/dice";
+import { DICE_SIDES, diceExpression, validCombinedQuantities, validateDice, type RollMode } from "@/lib/dice";
 import { SuccessTestRoller } from "@/components/SuccessTests";
 import { CombatPanel } from "@/components/Combat";
 import { useSheetUpdates } from "@/hooks/use-sheet-updates";
@@ -47,7 +47,7 @@ function Sala() {
   const [historyLimit, setHistoryLimit] = useState(50);
   const history = useQuery(rollsQuery(id, historyLimit));
   const dice = mode === "individual" ? [{sides, count}] : DICE_SIDES.flatMap(d => (quantities[d] ?? 0) > 0 ? [{sides:d, count:quantities[d] ?? 0}] : []);
-  const validation = validateDice(dice, mode);
+  const validation = mode === "combined" && !validCombinedQuantities(quantities) ? "Use quantidades inteiras entre 0 e 100." : validateDice(dice, mode);
   const expression = diceExpression(dice, mod);
   const characterOptions = chars.data?.filter(c => c.owner_id === camp.data?.userId || camp.data?.me?.role === "mestra") ?? [];
 
@@ -56,7 +56,7 @@ function Sala() {
     const ch = supabase.channel(`rolls-${id}-${Math.random().toString(36).slice(2)}`)
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "dice_rolls", filter: `campaign_id=eq.${id}` }, () => qc.invalidateQueries({ queryKey: ["rolls", id] }))
       .on("postgres_changes", { event: "*", schema: "public", table: "campaign_members", filter: `campaign_id=eq.${id}` }, () => qc.invalidateQueries({ queryKey: ["members", id] }))
-      .subscribe(status => setLive(status === "SUBSCRIBED"));
+      .subscribe(status => { setLive(status === "SUBSCRIBED"); if (status === "SUBSCRIBED") void qc.invalidateQueries({ queryKey: ["rolls", id] }); });
     return () => { supabase.removeChannel(ch); };
   }, [id, qc]);
 
@@ -100,7 +100,7 @@ function Sala() {
                 <Label htmlFor={`dice-${d}`} className="block font-mono text-xl">d{d}</Label>
                 <div className="flex items-center gap-1">
                   <Button type="button" size="icon" variant="ghost" className="h-8 w-8 shrink-0" title={`Diminuir d${d}`} aria-label={`Diminuir d${d}`} disabled={!quantities[d]} onClick={() => setQuantities(q => ({...q,[d]:Math.max(0,(q[d] || 0)-1)}))}><Minus className="h-4 w-4" /></Button>
-                  <Input id={`dice-${d}`} aria-label={`Quantidade de d${d}`} type="number" min={0} max={100} step={1} className="min-w-0 px-1 text-center" value={quantities[d] || 0} onChange={e => setQuantities(q => ({...q,[d]: e.target.valueAsNumber}))} />
+                  <Input id={`dice-${d}`} aria-label={`Quantidade de d${d}`} type="number" min={0} max={100} step={1} className="min-w-0 px-1 text-center" value={Number.isNaN(quantities[d]) ? "" : quantities[d] ?? 0} onChange={e => setQuantities(q => ({...q,[d]: e.target.valueAsNumber}))} />
                   <Button type="button" size="icon" variant="ghost" className="h-8 w-8 shrink-0" title={`Adicionar d${d}`} aria-label={`Adicionar d${d}`} disabled={(quantities[d] || 0) >= 100} onClick={() => setQuantities(q => ({...q,[d]:(q[d] || 0)+1}))}><Plus className="h-4 w-4" /></Button>
                 </div>
               </div>)}

@@ -25,3 +25,8 @@
 - [ ] Verify signup/email/password/Google completion — needs a real account/provider flow.
 - [ ] Verify live updates across distinct users — needs a second authorized session.
 - [ ] Certify forced database tie/reroll and all pointer-selection states — unverified execution paths, not a readiness claim.
+
+# Functional maintenance
+- [ ] Inspect current policies, RPCs, realtime, authentication and numeric inputs; preserve correct implementations.
+- [ ] Fix confirmed defects only and add focused regression tests.
+- [ ] Exercise changed flows and existing automated tests; document evidence and manual verification gaps.

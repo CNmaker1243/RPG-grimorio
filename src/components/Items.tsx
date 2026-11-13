@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { supabase } from "@/integrations/supabase/client";
 import { charactersQuery, errMsg } from "@/lib/rpg";
 import { itemsQuery, parseDamageFormula, readBonuses, readEntries, type Bonus, type Entry, type Item } from "@/lib/combat";
+import { integerInRange } from "@/lib/validation";
 import { diceExpression } from "@/lib/dice";
 
 type Draft = { name: string; category: string; description: string; damage_formula: string; bonuses: Bonus[]; attributes: Entry[]; properties: Entry[] };
@@ -26,12 +27,12 @@ export function ItemDetails({ item }: { item: Item }) {
   </div>;
 }
 
-function EntryList<T extends Record<string, string>>({ title, rows, keys, labels, onChange }: { title: string; rows: T[]; keys: [keyof T & string, keyof T & string]; labels: [string, string]; onChange: (r: T[]) => void }) {
+function EntryList<T extends Record<string, string>>({ title, rows, keys, labels, limits, onChange }: { title: string; rows: T[]; keys: [keyof T & string, keyof T & string]; labels: [string, string]; limits: [number, number]; onChange: (r: T[]) => void }) {
   return <div className="space-y-2">
-    <div className="flex items-center justify-between"><Label>{title}</Label><Button type="button" size="sm" variant="ghost" onClick={() => onChange([...rows, { [keys[0]]: "", [keys[1]]: "" } as T])}><Plus className="h-4 w-4" />Adicionar</Button></div>
+    <div className="flex items-center justify-between"><Label>{title}</Label><Button type="button" size="sm" variant="ghost" disabled={rows.length >= 50} onClick={() => onChange([...rows, { [keys[0]]: "", [keys[1]]: "" } as T])}><Plus className="h-4 w-4" />Adicionar</Button></div>
     {rows.map((r, i) => <div key={i} className="flex gap-2">
-      <Input aria-label={`${title}: ${labels[0]} ${i + 1}`} placeholder={labels[0]} maxLength={200} value={r[keys[0]]} onChange={e => onChange(rows.map((x, j) => j === i ? { ...x, [keys[0]]: e.target.value } : x))} />
-      <Input aria-label={`${title}: ${labels[1]} ${i + 1}`} placeholder={labels[1]} maxLength={60} className="w-36" value={r[keys[1]]} onChange={e => onChange(rows.map((x, j) => j === i ? { ...x, [keys[1]]: e.target.value } : x))} />
+      <Input aria-label={`${title}: ${labels[0]} ${i + 1}`} placeholder={labels[0]} maxLength={limits[0]} value={r[keys[0]]} onChange={e => onChange(rows.map((x, j) => j === i ? { ...x, [keys[0]]: e.target.value } : x))} />
+      <Input aria-label={`${title}: ${labels[1]} ${i + 1}`} placeholder={labels[1]} maxLength={limits[1]} className="w-36" value={r[keys[1]]} onChange={e => onChange(rows.map((x, j) => j === i ? { ...x, [keys[1]]: e.target.value } : x))} />
       <Button type="button" size="icon" variant="ghost" aria-label={`Remover linha ${i + 1} de ${title}`} onClick={() => onChange(rows.filter((_, j) => j !== i))}><X className="h-4 w-4" /></Button>
     </div>)}
   </div>;
@@ -62,9 +63,9 @@ function ItemForm({ campaignId, item, categories, done }: { campaignId: string; 
       <div className="space-y-1 sm:col-span-2"><Label htmlFor={`if-${fid}`}>Fórmula de dano (opcional)</Label><Input id={`if-${fid}`} className="font-mono" maxLength={60} placeholder="1d6 + 2" value={d.damage_formula} onChange={e => setD({ ...d, damage_formula: e.target.value })} />
         {formulaError ? <p className="text-xs text-destructive">{formulaError}</p> : parsed && typeof parsed !== "string" ? <p className="text-xs text-muted-foreground">Rolagem: {diceExpression(parsed.dice, parsed.modifier)}</p> : <p className="text-xs text-muted-foreground">Dados aceitos: d4, d6, d8, d10, d12, d20, d100.</p>}</div>
     </div>
-    <EntryList title="Bônus" rows={d.bonuses} keys={["description", "value"]} labels={["Descrição e como se aplica", "Valor"]} onChange={bonuses => setD({ ...d, bonuses })} />
-    <EntryList title="Atributos do item" rows={d.attributes} keys={["name", "value"]} labels={["Nome", "Valor"]} onChange={attributes => setD({ ...d, attributes })} />
-    <EntryList title="Outras propriedades" rows={d.properties} keys={["name", "value"]} labels={["Propriedade", "Valor"]} onChange={properties => setD({ ...d, properties })} />
+    <EntryList title="Bônus" rows={d.bonuses} keys={["description", "value"]} labels={["Descrição e como se aplica", "Valor"]} limits={[200, 60]} onChange={bonuses => setD({ ...d, bonuses })} />
+    <EntryList title="Atributos do item" rows={d.attributes} keys={["name", "value"]} labels={["Nome", "Valor"]} limits={[80, 200]} onChange={attributes => setD({ ...d, attributes })} />
+    <EntryList title="Outras propriedades" rows={d.properties} keys={["name", "value"]} labels={["Propriedade", "Valor"]} limits={[80, 200]} onChange={properties => setD({ ...d, properties })} />
     <div className="flex gap-2"><Button disabled={busy || !d.name.trim() || !!formulaError}>{item ? "Salvar item" : "Criar item"}</Button>{item && <Button type="button" variant="ghost" onClick={done}>Cancelar</Button>}</div>
   </form>;
 }
@@ -89,7 +90,7 @@ export function ItemsManager({ id }: { id: string }) {
     toast.success("Item entregue"); setAssign(a => ({ ...a, [i.id]: "" })); await refresh();
   }
   async function take(linkId: string) { const { error } = await supabase.from("character_items").delete().eq("id", linkId); if (error) { toast.error(errMsg(error)); return; } await refresh(); }
-  async function setQty(linkId: string, quantity: number) { if (!Number.isInteger(quantity) || quantity < 1) return; const { error } = await supabase.from("character_items").update({ quantity }).eq("id", linkId); if (error) toast.error(errMsg(error)); else await refresh(); }
+  async function setQty(linkId: string, quantity: number) { if (!integerInRange(quantity, 1, 9999)) return; const { error } = await supabase.from("character_items").update({ quantity }).eq("id", linkId); if (error) toast.error(errMsg(error)); else await refresh(); }
   return <div className="space-y-8">
     <section className="space-y-4 rounded-lg border border-border bg-card p-5"><h2 className="text-2xl font-semibold">Novo item</h2><ItemForm campaignId={id} categories={categories} done={() => {}} /></section>
     <section className="space-y-4"><h2 className="text-2xl font-semibold">Itens da campanha</h2>
@@ -97,7 +98,7 @@ export function ItemsManager({ id }: { id: string }) {
       <ul className="space-y-4">{list.map(i => { const links = items.data?.links.filter(l => l.item_id === i.id) ?? []; return <li key={i.id} className="space-y-4 rounded-lg border border-border bg-card p-5">
         {editing === i.id ? <ItemForm campaignId={id} item={i} categories={categories} done={() => setEditing(null)} /> : <div className="flex items-start gap-3"><div className="min-w-0 flex-1"><ItemDetails item={i} /></div><Button size="sm" variant="secondary" onClick={() => setEditing(i.id)}>Editar</Button><Button size="icon" variant="ghost" aria-label={`Excluir ${i.name}`} onClick={() => remove(i)}><Trash2 className="h-4 w-4" /></Button></div>}
         <div className="space-y-2 border-t border-border pt-3"><p className="text-sm font-medium">Nas fichas</p>
-          {links.length ? <ul className="space-y-1">{links.map(l => <li key={l.id} className="flex items-center gap-2 text-sm"><span className="min-w-0 flex-1 break-words">{chars.data?.find(c => c.id === l.character_id)?.name ?? "Personagem"}</span><Input aria-label="Quantidade" type="number" min={1} max={9999} className="h-8 w-20" defaultValue={l.quantity} onBlur={e => e.target.valueAsNumber !== l.quantity && setQty(l.id, e.target.valueAsNumber)} /><Button size="sm" variant="ghost" onClick={() => take(l.id)}>Retirar</Button></li>)}</ul> : <p className="text-xs text-muted-foreground">Ainda não entregue a nenhum personagem.</p>}
+          {links.length ? <ul className="space-y-1">{links.map(l => <li key={l.id} className="flex items-center gap-2 text-sm"><span className="min-w-0 flex-1 break-words">{chars.data?.find(c => c.id === l.character_id)?.name ?? "Personagem"}</span><Input aria-label="Quantidade" type="number" min={1} max={9999} className="h-8 w-20" key={`${l.id}-${l.quantity}`} defaultValue={l.quantity} onBlur={e => { if (!integerInRange(e.target.valueAsNumber, 1, 9999)) { e.target.value = String(l.quantity); return; } if (e.target.valueAsNumber !== l.quantity) void setQty(l.id, e.target.valueAsNumber); }} /><Button size="sm" variant="ghost" onClick={() => take(l.id)}>Retirar</Button></li>)}</ul> : <p className="text-xs text-muted-foreground">Ainda não entregue a nenhum personagem.</p>}
           <div className="flex gap-2"><Select value={assign[i.id] ?? ""} onValueChange={v => setAssign(a => ({ ...a, [i.id]: v }))}><SelectTrigger aria-label={`Entregar ${i.name} para`}><SelectValue placeholder="Entregar para…" /></SelectTrigger><SelectContent>{chars.data?.filter(c => !links.some(l => l.character_id === c.id)).map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent></Select><Button variant="secondary" disabled={!assign[i.id]} onClick={() => give(i)}>Entregar</Button></div>
         </div>
       </li>; })}</ul>}

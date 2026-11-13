@@ -12,6 +12,7 @@ import { campaignQuery, membersQuery, errMsg } from "@/lib/rpg";
 import { TemplateEditor } from "@/components/TemplateEditor";
 import { TemplatePermissions } from "@/components/TemplatePermissions";
 import { SuccessTestEditor } from "@/components/SuccessTests";
+import { integerInRange } from "@/lib/validation";
 import { useSheetUpdates } from "@/hooks/use-sheet-updates";
 
 export const Route = createFileRoute("/_authenticated/campanha/$id/mestra")({
@@ -50,6 +51,7 @@ function PainelMestra() {
 
   async function saveSettings(e: React.FormEvent) {
     e.preventDefault();
+    if (!name.trim() || !integerInRange(limit, 0, 50)) return;
     const { error } = await supabase.from("campaigns").update({ name: name.trim(), max_characters_per_player: limit }).eq("id", id);
     if (error) { toast.error(errMsg(error)); return; }
     toast.success("Configurações salvas");
@@ -62,6 +64,7 @@ function PainelMestra() {
     refresh();
   }
   async function updateMember(mid: string, patch: { can_create_characters?: boolean; max_characters?: number | null }) {
+    if (patch.max_characters !== undefined && patch.max_characters !== null && !integerInRange(patch.max_characters, 0, 50)) return;
     const { error } = await supabase.from("campaign_members").update(patch).eq("id", mid);
     if (error) { toast.error(errMsg(error)); return; }
     refresh();
@@ -100,9 +103,9 @@ function PainelMestra() {
           <div className="space-y-1"><Label htmlFor="n">Nome</Label>
             <Input id="n" required maxLength={120} value={name} onChange={(e) => setName(e.target.value)} /></div>
           <div className="space-y-1"><Label htmlFor="l">Fichas por jogador (padrão)</Label>
-            <Input id="l" type="number" min={0} max={50} value={limit} onChange={(e) => setLimit(Number(e.target.value))} /></div>
+            <Input id="l" type="number" min={0} max={50} required value={Number.isNaN(limit) ? "" : limit} onChange={(e) => setLimit(e.target.valueAsNumber)} /></div>
         </div>
-        <Button type="submit">Salvar</Button>
+        <Button type="submit" disabled={!name.trim() || !integerInRange(limit, 0, 50)}>Salvar</Button>
       </form>
 
       <section className="rounded-lg border border-border bg-card p-5">
@@ -119,9 +122,10 @@ function PainelMestra() {
                 Limite próprio
                 <Input
                   type="number" min={0} max={50} className="w-20"
-                  defaultValue={m.max_characters ?? ""} placeholder={String(c.max_characters_per_player)}
+                  key={`${m.id}-${m.max_characters}`} defaultValue={m.max_characters ?? ""} placeholder={String(c.max_characters_per_player)}
                   onBlur={(e) => {
                     const v = e.target.value === "" ? null : Number(e.target.value);
+                    if (v !== null && !integerInRange(v, 0, 50)) { e.target.value = m.max_characters === null ? "" : String(m.max_characters); return; }
                     if (v !== m.max_characters) updateMember(m.id, { max_characters: v });
                   }}
                 />
